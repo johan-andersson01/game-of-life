@@ -1,8 +1,8 @@
 /*jslint browser:true */
 /*jslint plusplus: true */
 var canvas, cc;
-var fps = 5;
-var cellSize = 8;
+var fps;
+var cellSize;
 var prevRound, thisRound, rows, cols;
 var terminate;
 
@@ -97,6 +97,8 @@ function drawCanvas() {
 
 window.onload = function () {
     "use strict";
+    fps = window.prompt("Set frames per second (fps)");
+    cellSize = window.prompt("Set cell size (px)");
     canvas = document.getElementById('canvas');
     cc = canvas.getContext('2d');
     initCanvas();
@@ -105,7 +107,7 @@ window.onload = function () {
             clearInterval(refresherID);
             cc.fillStyle = 'white';
             cc.font = "80px Arial";
-            cc.fillText("LIFE IS STABLE", canvas.width/3, canvas.height/1.1);
+            cc.fillText("LIFE IS STABLE", canvas.width / 3, canvas.height / 1.1);
 
         }
 
