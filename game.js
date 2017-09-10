@@ -3,7 +3,7 @@
 var canvas, cc;
 var rps;
 var cellSize;
-var prevRound, thisRound, rows, cols, dense;
+var prevRound, thisRound, rows, cols, scarcity;
 
 function initCanvas() {
     "use strict";
@@ -13,19 +13,20 @@ function initCanvas() {
     rows = Math.round(window.innerHeight / cellSize);
     prevRound = [];
     prevRound.length = cols;
-    var x, y;
+    var x, y, setAlive = 0;
     for (x = 0; x < cols; x++) {
         prevRound[x] = [];
         prevRound[x].length = rows;
         for (y = 0; y < rows; y++) {
-            if (x === 0 || y === 0 || x === cols - 1 || y === rows - 1) {
+            if (x === 0 || y === 0 || x === cols - 1 || y === rows - 1 ) {
                 prevRound[x][y] = 0;
 
             } else {
-                prevRound[x][y] = Math.round(Math.random() - 0.1);
+                prevRound[x][y] = Math.round(Math.random() - scarcity);
             }
         }
     }
+
 
     thisRound = [];
     thisRound.length = rows;
@@ -38,9 +39,11 @@ function initCanvas() {
     }
 }
 
+
 function getNeighbours(x, y) {
     "use strict";
-    var neighbours = [], i, k;
+    var neighbours = [],
+        i, k;
     neighbours.length = 8;
     for (i = -1; i < 2; i++) {
         for (k = -1; k < 2; k++) {
@@ -77,7 +80,8 @@ function survival(x, y) {
 
 function applyRules() {
     "use strict";
-    var terminate = true, x, y;
+    var terminate = true,
+        x, y;
     for (x = 0; x < cols; x++) {
         for (y = 0; y < rows; y++) {
             if (x < 2 || y < 2 || x > cols - 2 || y > rows - 2) {
@@ -108,14 +112,15 @@ function drawCanvas() {
     return applyRules();
 }
 
-window.onload = function () {
+window.onload = function() {
     "use strict";
-    rps = window.prompt("Set rounds per second", "1");
-    cellSize = window.prompt("Set cell size (px)", "10");
     canvas = document.getElementById('canvas');
     cc = canvas.getContext('2d');
+    rps = window.prompt("Set rounds per second", "1");
+    cellSize = window.prompt("Set cell size (px)", "10");
+    scarcity = parseFloat(window.prompt("Set cell scarcity (min: 0, max: 5)", "3"))/10;
     initCanvas();
-    var refresherID = setInterval(function () {
+    var refresherID = setInterval(function() {
         if (drawCanvas()) {
             clearInterval(refresherID);
         }
