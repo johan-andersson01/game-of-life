@@ -1,10 +1,9 @@
 /*jslint browser:true */
 /*jslint plusplus: true */
 var canvas, cc;
-var fps;
+var rps;
 var cellSize;
-var prevRound, thisRound, rows, cols;
-var terminate;
+var prevRound, thisRound, rows, cols, dense;
 
 function initCanvas() {
     "use strict";
@@ -14,39 +13,50 @@ function initCanvas() {
     rows = Math.round(window.innerHeight / cellSize);
     prevRound = [];
     prevRound.length = cols;
-    var i, k;
-    for (i = 0; i < cols; i++) {
-        prevRound[i] = [];
-        prevRound[i].length = rows;
-        for (k = 0; k < rows; k++) {
-            if (k === 0 || i === 0 || k === rows - 1 || i === cols - 1) {
-                prevRound[i][k] = 0;
+    var x, y;
+    for (x = 0; x < cols; x++) {
+        prevRound[x] = [];
+        prevRound[x].length = rows;
+        for (y = 0; y < rows; y++) {
+            if (x === 0 || y === 0 || x === cols - 1 || y === rows - 1) {
+                prevRound[x][y] = 0;
+
             } else {
-                prevRound[i][k] = Math.round(Math.random());
+                prevRound[x][y] = Math.round(Math.random() - 0.1);
             }
         }
     }
 
     thisRound = [];
     thisRound.length = rows;
-    for (i = 0; i < cols; i++) {
-        thisRound[i] = [];
-        thisRound[i].length = rows;
-        for (k = 0; k < rows; k++) {
-            thisRound[i][k] = 0;
+    for (x = 0; x < cols; x++) {
+        thisRound[x] = [];
+        thisRound[x].length = rows;
+        for (y = 0; y < rows; y++) {
+            thisRound[x][y] = 0;
         }
     }
 }
 
-function survival(i, k) {
+function getNeighbours(x, y) {
     "use strict";
-    var neighbours = [prevRound[i - 1][k - 1], prevRound[i - 1][k],
-            prevRound[i - 1][k + 1], prevRound[i][k - 1],
-            prevRound[i][k + 1], prevRound[i + 1][k - 1],
-            prevRound[i + 1][k], prevRound[i - 1][k + 1]
-            ],
+    var neighbours = [], i, k;
+    neighbours.length = 8;
+    for (i = -1; i < 2; i++) {
+        for (k = -1; k < 2; k++) {
+            if (!(i === 0 && k === 0)) {
+                neighbours.push(prevRound[x + i][y + k]);
+            }
+        }
+    }
+    return neighbours;
+}
+
+function survival(x, y) {
+    "use strict";
+    var neighbours = getNeighbours(x, y),
         aliveNeighbours = 0,
-        wasIalive = prevRound[i][k],
+        wasIalive = prevRound[x][y],
         survive = 0,
         j;
     for (j = 0; j < neighbours.length; j++) {
@@ -67,22 +77,25 @@ function survival(i, k) {
 
 function applyRules() {
     "use strict";
-    terminate = true;
-    var i, k;
-    for (i = 1; i < cols - 1; i++) {
-        for (k = 1; k < rows - 1; k++) {
-            thisRound[i][k] = survival(i, k);
-            if (prevRound[i][k] !== thisRound[i][k]) {
-                terminate = false;
+    var terminate = true, x, y;
+    for (x = 0; x < cols; x++) {
+        for (y = 0; y < rows; y++) {
+            if (x < 2 || y < 2 || x > cols - 2 || y > rows - 2) {
+                thisRound[x][y] = 0;
+            } else {
+                thisRound[x][y] = survival(x, y);
+                if (prevRound[x][y] !== thisRound[x][y]) {
+                    terminate = false;
+                }
             }
-            prevRound[i][k] = thisRound[i][k];
-            if (thisRound[i][k] === 1) {
+            prevRound[x][y] = thisRound[x][y];
+            if (thisRound[x][y] === 1) {
                 cc.fillStyle = '#E84C0C';
             } else {
-                cc.fillStyle = '#098075';
+                cc.fillStyle = 'white';
             }
-            cc.fillRect(i * cellSize, k * cellSize, i * cellSize + cellSize,
-                k * cellSize + cellSize);
+            cc.fillRect(x * cellSize, y * cellSize, (x + 1) * cellSize,
+                (y + 1) * cellSize);
         }
     }
     return terminate;
@@ -90,27 +103,23 @@ function applyRules() {
 
 function drawCanvas() {
     "use strict";
-    cc.fillStyle = '#098075';
+    cc.fillStyle = 'white';
     cc.fillRect(0, 0, canvas.width, canvas.height);
     return applyRules();
 }
 
 window.onload = function () {
     "use strict";
-    fps = window.prompt("Set frames per second (fps)");
-    cellSize = window.prompt("Set cell size (px)");
+    rps = window.prompt("Set rounds per second", "1");
+    cellSize = window.prompt("Set cell size (px)", "10");
     canvas = document.getElementById('canvas');
     cc = canvas.getContext('2d');
     initCanvas();
     var refresherID = setInterval(function () {
         if (drawCanvas()) {
             clearInterval(refresherID);
-            cc.fillStyle = 'white';
-            cc.font = "80px Arial";
-            cc.fillText("LIFE IS STABLE", canvas.width / 3, canvas.height / 1.1);
-
         }
 
-    }, 1000 / fps);
+    }, 1000 / rps);
 
 };
