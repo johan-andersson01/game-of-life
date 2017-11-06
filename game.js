@@ -1,10 +1,16 @@
-"use strict";
-let canvas, cc;
+/* jshint esversion: 6 */
+let canvas;
+let cc;
 let cellSize;
-let aliveCells, currentState, nextState, rows, cols;
+let aliveCells;
+let currentState;
+let nextState;
+let rows;
+let cols;
 let pad = 2; // padding
 
 const initCanvas = () => {
+    "use strict";
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     cols = Math.round(window.innerWidth / cellSize);
@@ -28,8 +34,6 @@ const initCanvas = () => {
             }
         }
     }
-    console.log(aliveCells.length);
-    console.log(cols*rows);
 
     nextState = [];
     nextState.length = rows;
@@ -43,6 +47,7 @@ const initCanvas = () => {
 }
 
 const getNeighbours = (x, y) => {
+    "use strict";
     let neighbours = [];
     for (let i = -1; i < 2; i++) {
         for (let k = -1; k < 2; k++) {
@@ -52,9 +57,10 @@ const getNeighbours = (x, y) => {
         }
     }
     return neighbours;
-}
+};
 
 const nbrOfAliveNeighbours = (x, y) => {
+    "use strict";
     let alive = 0;
     for (let i = -1; i < 2; i++) {
         for (let k = -1; k < 2; k++) {
@@ -66,9 +72,10 @@ const nbrOfAliveNeighbours = (x, y) => {
         }
     }   
     return alive;
-}
+};
 
 const calcNextState = (x, y) => {
+    "use strict";
     var aliveNeighbours = nbrOfAliveNeighbours(x, y);
     if (currentState[x][y] === 1 && (aliveNeighbours < 2 || aliveNeighbours > 3)) {
         nextState[x][y] = 0;
@@ -77,9 +84,10 @@ const calcNextState = (x, y) => {
     } else if (currentState[x][y] === 0 && aliveNeighbours === 3) {
         nextState[x][y] = 1;
     }
-}
+};
 
 const survival = (x, y) => {
+    "use strict";
     calcNextState(x, y);
     const neighbours = getNeighbours(x, y);
     for (const position of neighbours) {
@@ -91,10 +99,10 @@ const survival = (x, y) => {
             }
         }
     }
-}
+};
 
 const nextRound = () => {
-    // console.log(aliveCells.length);
+    "use strict";
     for (const position of aliveCells) {
         survival(position[0], position[1]);
     }
@@ -107,11 +115,11 @@ const nextRound = () => {
                 currentState[x][y] = nextState[x][y];
             }
             if (currentState[x][y] === 1) {
-                cc.fillStyle = 'green';
+                cc.fillStyle = "green";
                 aliveCells.push([x,y]);
             }
             else {
-                cc.fillStyle = 'black';
+                cc.fillStyle = "black";
             }
             cc.fillRect(x * cellSize, y * cellSize, (x + 1) * cellSize, (y + 1) * cellSize);
         }
@@ -122,11 +130,12 @@ const nextRound = () => {
         return false;
     }
     return true;
-}
+};
 
-window.onload = function() {
-    canvas = document.getElementById('canvas');
-    cc = canvas.getContext('2d');
+window.onload = () => {
+    "use strict";
+    canvas = document.getElementById("canvas");
+    cc = canvas.getContext("2d");
     cellSize = 15;
     initCanvas();
     var refresherID = setInterval(function() {
