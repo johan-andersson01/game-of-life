@@ -1,5 +1,7 @@
 # The Game of Life
 
+![](https://github.com/johan-andersson01/game-of-life/blob/master/game-of-life.gif)
+
 Devised by John Conway in 1970, The Game of Life is a [cellular automaton](https://en.wikipedia.org/wiki/Cellular_automaton).
 
 The game is initialized with a random number of alive cells. After this initialization, the game requires no input as its state depends entirely on its previous state. (The process is therefore entirely deterministic, given an initial state)
