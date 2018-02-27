@@ -1,5 +1,4 @@
 /* jshint esversion: 6 */
-alert('Hold control and move your mouse to give birth to cells. Press delete to clear the canvas. ');
 let canvas = document.getElementById("canvas");
 let cc;
 let cellSize;
@@ -18,18 +17,6 @@ const initCanvas = () => {
     rows = Math.round(window.innerHeight / cellSize);
     currentState = new Map();
     nextState = new Map();
-    // let initCells = 1000;
-    // for (var i = 0; i < initCells; i++) {
-    //     let x, y = 0;
-    //     while (x < pad || x > cols - pad || y < pad || y > rows - pad) {
-    //         x = Math.round(Math.random()*cols);
-    //         y = Math.round(Math.random()*rows);
-    //     }
-    //     let coord = x + '-' + y;
-    //     currentState.set(coord, 1);
-    // }
-    // nextState = currentState;
-
 };
 
 const getNeighbours = (x, y) => {
@@ -108,12 +95,13 @@ const run = (color) => {
 
 window.onload = () => {
     "use strict";
+    alert('Hold control and move your mouse to give birth to cells. Press delete to clear the canvas. ');
     cc = canvas.getContext("2d");
     cellSize = 10;
     initCanvas();
     let colors = ["turquoise", "mediumturquoise", "darkturquoise"];
     let i = 0;
-    var refresherID = setInterval(function() {
+    let refresherID = setInterval(function() {
         if (i == colors.length) i = 0;
         let color = colors[i++];
         if (!run(color)) {
@@ -124,19 +112,12 @@ window.onload = () => {
 
 canvas.addEventListener('mousemove', function(event) {
     if (ctrlDown == 1) {
-        var x = event.pageX;
-        var y = event.pageY;
+        let x = event.pageX;
+        let y = event.pageY;
         let coord = Math.round(x/cellSize) + '-' + Math.round(y/cellSize);
         nextState.set(coord, 1);
     }
 }, false);
-
-document.addEventListener('keypress', (event) => {
-    const keyName = event.key;
-    if (keyName === 'Delete') {
-        currentState = new Map();
-    }
-  });
 
   document.addEventListener('keyup', (event) => {
     const keyName = event.key;
@@ -149,5 +130,8 @@ document.addEventListener('keypress', (event) => {
     const keyName = event.key;
     if (keyName === 'Control') {
         ++ctrlDown;
+    }
+    else if (keyName === 'Delete') {
+        currentState = new Map();
     }
   });
