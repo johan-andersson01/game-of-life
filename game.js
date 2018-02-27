@@ -110,7 +110,7 @@ window.onload = () => {
     }, 100);
 };
 
-canvas.addEventListener('mousemove', function(event) {
+document.addEventListener('mousemove', function(event) {
     if (ctrlDown == 1) {
         let x = event.pageX;
         let y = event.pageY;
@@ -135,3 +135,13 @@ canvas.addEventListener('mousemove', function(event) {
         currentState = new Map();
     }
   });
+
+  document.addEventListener("touchmove", (event) => {
+      var i;
+    for ( i=0; i < event.changedTouches.length; i++) {
+        let x = event.changedTouches[i].pageX;
+        let y = event.changedTouches[i].pageY;
+        let coord = Math.round(x/cellSize) + '-' + Math.round(y/cellSize);
+        nextState.set(coord, 1);
+    }
+  }, false);
