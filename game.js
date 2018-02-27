@@ -8,15 +8,22 @@ let rows;
 let cols;
 let pad = 2; // padding
 let ctrlDown = 0;
+let firstClick = false;
 
 const initCanvas = () => {
     "use strict";
+    cc = canvas.getContext("2d");
+    cellSize = 10;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     cols = Math.round(window.innerWidth / cellSize);
     rows = Math.round(window.innerHeight / cellSize);
     currentState = new Map();
     nextState = new Map();
+    cc.font = "30px Arial";
+    cc.fillText("Only tested for Firefox", canvas.width/2-canvas.width*0.2, canvas.height/2);
+    cc.fillText("PC: hold ctrl and move your mouse. Press delete to clear.", canvas.width/2-canvas.width*0.2, canvas.height/2+40);
+    cc.fillText("Mobile: (multi)touch! Reload to clear.", canvas.width/2-canvas.width*0.2, canvas.height/2+80);
 };
 
 const getNeighbours = (x, y) => {
@@ -77,8 +84,10 @@ const survival = (x, y) => {
 
 const run = (color) => {
     "use strict";
-    cc.fillStyle = "white";
-    cc.fillRect(0,0,canvas.width, canvas.height);
+    if (currentState.size > 0) {
+        cc.fillStyle = "white";
+        cc.fillRect(0,0,canvas.width, canvas.height);
+    } 
     for (const [coord, value] of currentState) {
         let coords = [];
         coords = coord.split('-');
@@ -95,9 +104,6 @@ const run = (color) => {
 
 window.onload = () => {
     "use strict";
-    alert('Hold control and move your mouse to give birth to cells. Press delete to clear the canvas. ');
-    cc = canvas.getContext("2d");
-    cellSize = 10;
     initCanvas();
     let colors = ["turquoise", "mediumturquoise", "darkturquoise"];
     let i = 0;
@@ -111,7 +117,10 @@ window.onload = () => {
 };
 
 document.addEventListener('mousemove', function(event) {
-    if (ctrlDown == 1) {
+    if (!firstClick) {
+        firstClick = true;
+    }
+    if (event.ctrlKey) {
         let x = event.pageX;
         let y = event.pageY;
         let coord = Math.round(x/cellSize) + '-' + Math.round(y/cellSize);
@@ -119,25 +128,18 @@ document.addEventListener('mousemove', function(event) {
     }
 }, false);
 
-  document.addEventListener('keyup', (event) => {
-    const keyName = event.key;
-    if (keyName === 'Control') {
-        if (ctrlDown > 0) --ctrlDown;
-    }
-  });
-
   document.addEventListener('keydown', (event) => {
-    const keyName = event.key;
-    if (keyName === 'Control') {
-        ++ctrlDown;
-    }
-    else if (keyName === 'Delete') {
+    keyName = event.key;
+    if (keyName === 'Delete') {
         currentState = new Map();
     }
   });
 
   document.addEventListener("touchmove", (event) => {
-      var i;
+    if (!firstClick) {
+        firstClick = true;
+    }
+    var i;
     for ( i=0; i < event.changedTouches.length; i++) {
         let x = event.changedTouches[i].pageX;
         let y = event.changedTouches[i].pageY;
